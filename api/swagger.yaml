@@ -1,0 +1,136 @@
+openapi: 3.0.0
+info:
+  title: Link Shortener
+  description: |-
+    Федоренко Іван supremacy
+  contact:
+    name: Mr. Chekaut
+    url: https://github.com/Mr-Checkaut-Dungeon-IM-42/link_shortener
+  license:
+    name: MIT
+    url: https://mit-license.org/
+  version: "1.0"
+tags:
+  - name: redirect
+    description: The main endpoint
+  - name: user
+    description: User-side endpoints
+paths:
+  /{shortID}:
+    get:
+      tags:
+        - redirect
+      summary: Get redirected to the target URL.
+      parameters:
+        - name: shortID
+          in: path
+          description: Short link ID
+          required: true
+          schema:
+            type: string
+      operationId: redirect
+      responses:
+        '308':
+          description: Success. Redirecting...
+          headers:
+            Location:
+              description: Redirect URL
+              schema:
+                type: string
+                format: url
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Short not found
+  /user/url/new:
+    post:
+      tags:
+        - user
+      summary: Creates a new shortened URL (Short).
+      description: |
+        Creates a new Short with random ID, valid for an unspecified duration.
+        Returns original URL, short URL, the creation timestamp and duration of validity.
+      parameters:
+        - name: url
+          in: query
+          description: Full unshortened URL
+          required: true
+          schema:
+            type: string
+            format: url
+      responses:
+        '200':
+          description: URL shortened successfully
+          content:
+            "application/json":
+              schema:
+                type: object
+                $ref: "#/components/schemas/Short"
+        '400':
+          description: Invalid URL provided
+      operationId: createNewShort
+  /user/url/list:
+    get:
+      tags:
+        - user
+      summary: Get all user Shorts. TODO.
+      description: Returns all currently valid Short objects created by the user.
+      operationId: getUserShorts
+      responses:
+        '200':
+          description: Success
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Short"
+        '401':
+          description: Invalid permissions. TODO.
+
+  /user/register:
+    post:
+      tags:
+        - user
+      summary: Register a new user. TODO.
+      description: Registeres a new user with provided credentials.
+      operationId: registerUser
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Invalid data provided
+  /user/login:
+    post:
+      tags:
+        - user
+      summary: Authorize a user. TODO.
+      description: Returns some token blah blah blah we'll see.
+      operationId: loginUser
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Invalid credentials
+
+components:
+  schemas:
+    Short:
+      type: object
+      properties:
+        full_url:
+          type: string
+          format: url
+          example: "https://youtube.com"
+        short_url:
+          type: string
+          format: url
+          example: "https://shorten.er/SbFd"
+        created_at:
+          type: integer
+          format: int64
+          example: 1749336188
+        valid_for:
+          type: integer
+          format: int64
+          example: 86400
