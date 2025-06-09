@@ -1,4 +1,4 @@
-FROM ghcr.io/astral-sh/uv:0.7.12-python3.13-alpine
+FROM ghcr.io/astral-sh/uv:0.7.12-python3.13-alpine AS base
 
 ADD . /app/backend
 WORKDIR /app/backend
@@ -8,4 +8,8 @@ ENV UV_LINK_MODE=copy
 
 RUN uv sync --locked
 
+FROM base AS debug
+CMD ["uv", "run", "fastapi", "dev", "src/main.py", "--host", "0.0.0.0"]
+
+FROM base AS release
 CMD ["uv", "run", "fastapi", "run", "src/main.py"]

@@ -1,0 +1,25 @@
+services:
+  frontend:
+    build:
+      target: debug
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /app/frontend/src
+        - action: rebuild
+          path: ./frontend/package.json
+    ports: !override
+      - "127.0.0.1:3000:3000"
+  backend:
+    build:
+      target: debug
+    develop:
+      watch:
+        - action: sync
+          path: ./backend/src
+          target: /app/backend/src
+        - action: rebuild
+          path: ./backend/uv.lock
+    ports: !override
+      - "127.0.0.1:8000:8000"

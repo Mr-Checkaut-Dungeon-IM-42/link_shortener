@@ -3,11 +3,13 @@ services:
     build:
       context: ./frontend/
       dockerfile: Dockerfile
+      target: release
     ports:
       - "3000:3000"
   backend:
     build:
       context: ./backend/
       dockerfile: Dockerfile
+      target: release
     ports:
       - "8000:8000"
