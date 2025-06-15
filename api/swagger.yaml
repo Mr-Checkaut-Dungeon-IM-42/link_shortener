@@ -59,14 +59,14 @@ paths:
             type: string
             format: url
       responses:
-        '200':
+        '201':
           description: URL shortened successfully
           content:
             "application/json":
               schema:
                 type: object
                 $ref: "#/components/schemas/Short"
-        '400':
+        '422':
           description: Invalid URL provided
       operationId: createNewShort
   /user/url/list:
@@ -118,14 +118,13 @@ components:
     Short:
       type: object
       properties:
+        id:
+          type: string
+          example: "aBC234"
         full_url:
           type: string
           format: url
           example: "https://youtube.com"
-        short_url:
-          type: string
-          format: url
-          example: "https://shorten.er/SbFd"
         created_at:
           type: integer
           format: int64
