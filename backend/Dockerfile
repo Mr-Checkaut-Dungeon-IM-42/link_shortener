@@ -9,7 +9,7 @@ ENV UV_LINK_MODE=copy
 RUN uv sync --locked
 
 FROM base AS debug
-CMD ["uv", "run", "fastapi", "dev", "src/main.py", "--host", "0.0.0.0"]
+CMD ["uv", "run", "fastapi", "dev" , "--host", "0.0.0.0"]
 
 FROM base AS release
-CMD ["uv", "run", "fastapi", "run", "src/main.py"]
+CMD ["uv", "run", "fastapi", "run"]

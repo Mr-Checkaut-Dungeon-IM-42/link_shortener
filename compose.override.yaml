@@ -17,8 +17,8 @@ services:
     develop:
       watch:
         - action: sync
-          path: ./backend/src
-          target: /app/backend/src
+          path: ./backend/app
+          target: /app/backend/app
         - action: rebuild
           path: ./backend/uv.lock
     ports: !override
