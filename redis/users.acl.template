@@ -1,0 +1,2 @@
+user backend on >${REDIS_BACKEND_PASSWORD} ~* +@all -@dangerous -@admin
+user frontend on >${REDIS_FRONTEND_PASSWORD} ~* +@connection +@read

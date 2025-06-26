@@ -1,4 +1,31 @@
 services:
+  cache:
+    image: redis/redis-stack-server:7.2.0-v17
+    env_file:
+      - .env
+    environment:
+      SKIP_FIX_PERMS: 1
+      REDIS_FRONTEND_PASSWORD: ${REDIS_BACKEND_PASSWORD}
+      REDIS_BACKEND_PASSWORD: ${REDIS_BACKEND_PASSWORD}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 30s
+      retries: 5
+      start_period: 3s
+    restart: always
+    command: >
+      sh -c "
+        apt-get update &&
+        apt-get install -y --no-install-recommends gettext-base &&
+        rm -rf /var/lib/apt/lists/* &&
+        envsubst < /usr/local/etc/redis/users.acl.template > /usr/local/etc/redis/users.acl &&
+        redis-stack-server /usr/local/etc/redis/redis.conf
+      "
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./redis/users.acl.template:/usr/local/etc/redis/users.acl.template:ro
+
   frontend:
     build:
       context: ./frontend/
@@ -6,6 +33,18 @@ services:
       target: release
     ports:
       - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      REDIS_HOST: cache
+      REDIS_PORT: 6379
+      REDIS_USER: frontend
+      REDIS_PASSWORD: ${REDIS_FRONTEND_PASSWORD}
+      REDIS_DB: 0
+    depends_on:
+      cache:
+        condition: service_healthy
+
   backend:
     build:
       context: ./backend/
@@ -13,3 +52,14 @@ services:
       target: release
     ports:
       - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      REDIS_HOST: cache
+      REDIS_PORT: 6379
+      REDIS_USER: backend
+      REDIS_PASSWORD: ${REDIS_BACKEND_PASSWORD}
+      REDIS_DB: 0
+    depends_on:
+      cache:
+        condition: service_healthy
